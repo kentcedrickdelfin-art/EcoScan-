@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoScan | AI Waste Management</title>
+  <style>
+    :root { --green:#18794e; --green-dark:#105c3a; --mint:#eaf7ef; --ink:#183328; --muted:#63756b; --line:#dce9df; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial,Helvetica,sans-serif; background:#f5faf6; color:var(--ink); }
+    header { background:white; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+    .nav { max-width:980px; margin:auto; padding:15px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .brand { display:flex; align-items:center; gap:10px; font-size:1.25rem; font-weight:800; color:var(--green-dark); }
+    .logo { width:38px; height:38px; display:grid; place-items:center; background:var(--mint); border-radius:13px; font-size:22px; }
+    .tag { color:var(--green); background:var(--mint); padding:7px 10px; border-radius:999px; font-size:.78rem; font-weight:700; }
+    main { max-width:980px; margin:auto; padding:25px 18px 50px; }
+    .hero { background:linear-gradient(135deg,#e5f6e9,#f7fcf8); border:1px solid var(--line); border-radius:24px; padding:26px; display:grid; grid-template-columns:1.2fr .8fr; gap:20px; align-items:center; }
+    h1 { font-size:clamp(2rem,5vw,3.1rem); line-height:1.05; margin:10px 0 12px; letter-spacing:-1.4px; }
+    .hero p { color:#4f6c5b; line-height:1.6; max-width:480px; }
+    .hero-art { font-size:100px; text-align:center; }
+    .button { border:0; border-radius:12px; padding:12px 16px; font-weight:700; cursor:pointer; font-size:.95rem; }
+    .primary { background:var(--green); color:white; }
+    .primary:hover { background:var(--green-dark); }
+    .secondary { background:white; color:var(--green-dark); border:1px solid var(--line); }
+    .section-title { margin:27px 0 13px; font-size:1.25rem; }
+    .layout { display:grid; grid-template-columns:1.1fr .9fr; gap:18px; align-items:start; }
+    .card { background:white; border:1px solid var(--line); border-radius:20px; padding:20px; box-shadow:0 4px 15px #18332808; }
+    .card h2 { font-size:1.1rem; margin:0 0 8px; }
+    .muted { color:var(--muted); font-size:.92rem; line-height:1.5; }
+    .drop { border:2px dashed #b9d7c1; border-radius:16px; background:#f9fdf9; min-height:200px; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:16px; text-align:center; gap:10px; }
+    .drop img { max-width:100%; max-height:280px; object-fit:contain; border-radius:12px; }
+    .drop .placeholder { font-size:48px; }
+    input[type=file] { max-width:100%; }
+    .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:13px; }
+    .field { display:flex; flex-direction:column; gap:7px; margin-top:14px; }
+    label { font-size:.88rem; font-weight:700; }
+    input[type=url] { width:100%; padding:12px; border:1px solid #cdded1; border-radius:10px; font:inherit; }
+    .hint { font-size:.82rem; line-height:1.5; color:var(--muted); }
+    .status { margin-top:13px; padding:11px 12px; background:#f3f7f4; border-radius:10px; font-size:.88rem; line-height:1.5; }
+    .result { margin-top:14px; border-radius:14px; background:var(--mint); padding:15px; display:none; }
+    .result h3 { margin:0 0 7px; color:var(--green-dark); }
+    .result p { margin:5px 0; line-height:1.5; }
+    .confidence { font-size:.86rem; color:#426650; }
+    .guide-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .guide { background:white; border:1px solid var(--line); border-radius:15px; padding:14px; }
+    .guide .emoji { font-size:26px; }
+    .guide h3 { margin:7px 0 5px; font-size:.98rem; }
+    .guide p { color:var(--muted); font-size:.85rem; line-height:1.45; margin:0; }
+    .history { margin:0; padding:0; list-style:none; }
+    .history li { padding:10px 0; border-bottom:1px solid #edf3ee; font-size:.9rem; }
+    .history li:last-child { border-bottom:0; }
+    footer { text-align:center; color:var(--muted); font-size:.82rem; padding:24px 12px; }
+    @media(max-width:700px) { .hero,.layout { grid-template-columns:1fr; } .hero-art { font-size:68px; order:-1; } .hero { padding:21px; } .guide-grid { grid-template-columns:1fr; } .tag { display:none; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand"><span class="logo">♻️</span> EcoScan</div>
+    <span class="tag">AI WASTE ASSISTANT</span>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <span class="tag">SMALL ACTIONS. BIG IMPACT.</span>
+      <h1>Scan smart.<br>Sort right.</h1>
+      <p>Identify waste, learn how to dispose of it responsibly, and take one more step toward a cleaner community.</p>
+      <button class="button primary" onclick="document.getElementById('scanner').scrollIntoView({behavior:'smooth'})">Start scanning ↓</button>
+    </div>
+    <div class="hero-art" aria-hidden="true">🌱♻️</div>
+  </section>
+
+  <h2 class="section-title" id="scanner">Scan your waste</h2>
+  <div class="layout">
+    <section class="card">
+      <h2>1. Add a photo</h2>
+      <p class="muted">Open your phone camera, point it at the waste item, and capture a photo. Image uploads from the gallery are not used.</p>
+      <div class="drop" id="drop">
+        <video id="camera" autoplay playsinline muted style="width:100%;max-height:280px;object-fit:contain;border-radius:12px;background:#10251a" hidden></video>
+        <canvas id="captureCanvas" hidden></canvas>
+        <div class="placeholder" id="placeholder">📷</div>
+        <img id="preview" alt="Captured waste preview" hidden>
+        <strong id="fileText">Camera is not open</strong>
+      </div>
+      <div class="actions">
+        <button class="button primary" id="cameraBtn" type="button">Open camera</button>
+        <button class="button secondary" id="captureBtn" type="button" disabled>Capture photo</button>
+        <button class="button primary" id="scanBtn" type="button">Identify waste with AI</button>
+        <button class="button secondary" id="clearBtn" type="button">Retake / clear</button>
+      </div>
+      <div class="status" id="status" role="status">Open the camera to capture a waste photo. The AI model must be connected to identify the item.</div>
+      <div class="result" id="result" aria-live="polite">
+        <h3 id="resultTitle">Prediction</h3>
+        <p id="resultCategory"></p>
+        <p id="resultAdvice"></p>
+        <p class="confidence" id="confidence"></p>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>2. Connect your AI model</h2>
+      <p class="muted">Train a waste image model using Teachable Machine, then paste the model URL here.</p>
+      <div class="field">
+        <label for="modelUrl">Teachable Machine model URL</label>
+        <input type="url" id="modelUrl" placeholder="https://teachablemachine.withgoogle.com/models/..." autocomplete="url">
+      </div>
+      <div class="actions">
+        <button class="button primary" id="loadModelBtn">Load AI model</button>
+      </div>
+      <p class="hint">Your exported model URL should point to a Teachable Machine image model. The app will load its model.json and metadata.json files.</p>
+      <p class="hint"><strong>Beginner tip:</strong> First create classes such as Plastic, Paper, Glass, Metal, Organic, and Other. Train and export an image project, then copy its shareable model URL.</p>
+      <a href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener noreferrer">Open Teachable Machine ↗</a>
+    </aside>
+  </div>
+
+  <h2 class="section-title">Waste sorting quick guide</h2>
+  <div class="guide-grid">
+    <article class="guide"><div class="emoji">🧴</div><h3>Plastic</h3><p>Empty and rinse containers. Check if your local program accepts that type of plastic.</p></article>
+    <article class="guide"><div class="emoji">📄</div><h3>Paper</h3><p>Keep paper clean and dry. Greasy or food-soiled paper may not be recyclable.</p></article>
+    <article class="guide"><div class="emoji">🥫</div><h3>Metal</h3><p>Empty cans and follow local collection guidance. Handle sharp edges carefully.</p></article>
+    <article class="guide"><div class="emoji">🍌</div><h3>Organic</h3><p>Food scraps may be composted where a suitable collection or composting system exists.</p></article>
+    <article class="guide"><div class="emoji">🍾</div><h3>Glass</h3><p>Check local glass collection rules. Wrap broken glass safely and never put it loose in a bag.</p></article>
+    <article class="guide"><div class="emoji">🔋</div><h3>Special waste</h3><p>Batteries, bulbs, chemicals, and e-waste may need dedicated collection points.</p></article>
+  </div>
+
+  <h2 class="section-title">Recent scans on this device</h2>
+  <section class="card">
+    <ul class="history" id="history"><li class="muted">No scans yet. Your successful predictions will appear here during this browser session.</li></ul>
+  </section>
+</main>
+<footer>EcoScan student prototype · AI predictions can be wrong. Confirm disposal rules with your local waste authority.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+<script>
+  let model = null;
+  let currentImage = null;
+  let cameraStream = null;
+  let scanHistory = [];
+  const camera = document.getElementById('camera');
+  const captureCanvas = document.getElementById('captureCanvas');
+  const preview = document.getElementById('preview');
+  const placeholder = document.getElementById('placeholder');
+  const fileText = document.getElementById('fileText');
+  const statusBox = document.getElementById('status');
+  const result = document.getElementById('result');
+  const cameraBtn = document.getElementById('cameraBtn');
+  const captureBtn = document.getElementById('captureBtn');
+
+  // ====== PASTE YOUR MODEL LINK HERE ======
+  // The AI loads automatically when the page opens.
+  const MODEL_URL = "https://teachablemachine.withgoogle.com/models/nAmjGMeRT/";
+
+  const adviceByClass = {
+    plastic: 'Empty and rinse it, then let it dry. Check whether your barangay MRF or local junk shop accepts this type of plastic.',
+    paper: 'Keep paper clean and dry. Separate it for paper recycling if accepted locally.',
+    cardboard: 'Flatten clean cardboard and keep it dry before recycling.',
+    glass: 'Check local glass collection rules. If broken, wrap it in newspaper or cardboard and label it "BROKEN GLASS" to protect waste collectors.',
+    metal: 'Empty and rinse the can, then place it in metal recycling or sell it to a junk shop.',
+    organic: 'Food scraps can be composted or placed in the biodegradable waste bin.',
+    food: 'Food scraps can be composted or placed in the biodegradable waste bin.',
+    battery: 'Do not put batteries in ordinary bins. Take them to a designated battery collection point.',
+    ewaste: 'Keep electronic waste separate and take it to an authorized e-waste collection point.',
+    trash: 'If it cannot be reused or recycled, place it in the non-biodegradable/residual waste bin.',
+    other: 'Ask your barangay or LGU how to dispose of this item. If the prediction seems wrong, try a clearer photo.'
+  };
+
+  function adviceFor(label) {
+    const key = label.toLowerCase();
+    for (const [word, advice] of Object.entries(adviceByClass)) {
+      if (key.includes(word)) return advice;
+    }
+    return 'Ask your barangay or LGU how to dispose of this item. If the prediction seems wrong, try another clear photo.';
+  }
+
+  async function loadModel(rawUrl) {
+    const url = rawUrl.trim().replace(/\/?$/, '/');
+    if (!url.startsWith('https://')) {
+      statusBox.textContent = 'Please paste a valid HTTPS model URL from Teachable Machine.';
+      return false;
+    }
+    if (!window.tf || !window.tmImage) {
+      statusBox.textContent = 'The AI libraries (TensorFlow / Teachable Machine) did not load. Check your internet connection and refresh the page (Ctrl+F5).';
+      return false;
+    }
+    statusBox.textContent = 'Loading AI model…';
+    try {
+      model = await tmImage.load(url + 'model.json', url + 'metadata.json');
+      statusBox.textContent = 'AI model loaded. Choose a photo and click “Identify waste with AI”.';
+      return true;
+    } catch (error) {
+      model = null;
+      console.error(error);
+      statusBox.textContent = 'Could not load the model. Reason: ' + (error && error.message ? error.message : error) + ' — Check that the link is correct and the model is uploaded and public in Teachable Machine.';
+      return false;
+    }
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      statusBox.textContent = 'Camera access is unavailable. Open EcoScan using HTTPS or localhost in a supported browser.';
+      return;
+    }
+    try {
+      if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+      camera.srcObject = cameraStream;
+      camera.hidden = false;
+      preview.hidden = true;
+      placeholder.hidden = true;
+      fileText.textContent = 'Camera ready. Point it at the waste item.';
+      captureBtn.disabled = false;
+      statusBox.textContent = 'Camera is ready. Capture a clear photo of the waste item.';
+    } catch (error) {
+      statusBox.textContent = 'Could not open the camera. Allow camera permission in your browser settings and try again. ' +
+        (error && error.message ? error.message : '');
+    }
+  }
+
+  cameraBtn.addEventListener('click', openCamera);
+
+  captureBtn.addEventListener('click', () => {
+    if (!cameraStream || !camera.videoWidth) {
+      statusBox.textContent = 'Open the camera first, then capture your photo.';
+      return;
+    }
+    captureCanvas.width = camera.videoWidth;
+    captureCanvas.height = camera.videoHeight;
+    const context = captureCanvas.getContext('2d');
+    context.drawImage(camera, 0, 0, captureCanvas.width, captureCanvas.height);
+    const imageData = captureCanvas.toDataURL('image/jpeg', 0.92);
+    currentImage = new Image();
+    currentImage.onload = () => {
+      preview.src = imageData;
+      preview.hidden = false;
+      camera.hidden = true;
+      placeholder.hidden = true;
+      fileText.textContent = 'Photo captured. Ready to identify.';
+      result.style.display = 'none';
+      statusBox.textContent = 'Photo captured. Click “Identify waste with AI”.';
+    };
+    currentImage.src = imageData;
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    currentImage = null;
+    preview.removeAttribute('src');
+    preview.hidden = true;
+    result.style.display = 'none';
+    if (cameraStream) {
+      camera.hidden = false;
+      placeholder.hidden = true;
+      fileText.textContent = 'Camera ready. Capture another photo.';
+      statusBox.textContent = 'Ready to capture another photo.';
+    } else {
+      camera.hidden = true;
+      placeholder.hidden = false;
+      fileText.textContent = 'Camera is not open';
+      statusBox.textContent = 'Open the camera to scan another waste item.';
+    }
+  });
+
+  document.getElementById('loadModelBtn').addEventListener('click', () => {
+    loadModel(document.getElementById('modelUrl').value);
+  });
+
+  // Auto-load kon may MODEL_URL na
+  if (MODEL_URL) {
+    document.getElementById('modelUrl').value = MODEL_URL;
+    window.addEventListener('load', () => loadModel(MODEL_URL));
+  }
+
+  document.getElementById('scanBtn').addEventListener('click', async () => {
+    if (!currentImage) {
+      statusBox.textContent = 'Please take a photo or choose an image first.';
+      return;
+    }
+    if (!model) {
+      const urlValue = document.getElementById('modelUrl').value.trim() || MODEL_URL;
+      if (!urlValue) {
+        statusBox.textContent = 'AI is not connected yet. Paste your Teachable Machine model URL in the setup panel and click Load AI model.';
+        return;
+      }
+      const ok = await loadModel(urlValue);
+      if (!ok) return;
+    }
+    statusBox.textContent = 'Analyzing image…';
+    try {
+      const predictions = await model.predict(currentImage);
+      predictions.sort((a, b) => b.probability - a.probability);
+      const best = predictions[0];
+      const label = best.className;
+      const pct = Math.round(best.probability * 100);
+      document.getElementById('resultTitle').textContent = label;
+      document.getElementById('resultCategory').textContent = 'Predicted category: ' + label;
+      document.getElementById('resultAdvice').textContent = 'Disposal tip: ' + adviceFor(label);
+      document.getElementById('confidence').textContent = 'Model confidence: ' + pct + '%. This is an estimate, not a guarantee.';
+      result.style.display = 'block';
+      statusBox.textContent = 'Analysis complete. Check that the prediction matches the item in your photo.';
+      scanHistory.unshift({ label, pct, time: new Date().toLocaleTimeString() });
+      renderHistory();
+    } catch (error) {
+      statusBox.textContent = 'The model could not analyze this photo. Try another image or reload the model.';
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+  });
+
+  function renderHistory() {
+    const list = document.getElementById('history');
+    list.innerHTML = '';
+    scanHistory.slice(0, 8).forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item.time + ' — ' + item.label + ' (' + item.pct + '% confidence)';
+      list.appendChild(li);
+    });
+    if (!scanHistory.length) {
+      const li = document.createElement('li');
+      li.className = 'muted';
+      li.textContent = 'No scans yet.';
+      list.appendChild(li);
+    }
+  }
+</script>
+</body>
+</html>
